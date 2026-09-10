@@ -1,4 +1,0 @@
-git add .
-git commit -m "更動內容"
-git branch -M main
-git push -u origin main
