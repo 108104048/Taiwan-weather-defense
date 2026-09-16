@@ -13,7 +13,9 @@ def fetch_and_save_weather(cursor, conn):
 
         cursor.execute("DELETE FROM weather_table")
 
-        location = data["records"]["location"]        
+        location = data["records"]["location"] 
+        weather_data_list = []
+        
         for city in location:
             element0 = city["locationName"]
             elements = city["weatherElement"]
@@ -22,20 +24,22 @@ def fetch_and_save_weather(cursor, conn):
             for element in elements:
                 if element["elementName"] == "Wx":
                     element1 = element["time"]["parameter"]["parameterName"]
-                if element["elementName"] == "PoP":
+                elif element["elementName"] == "PoP":
                     element2 = element["time"]["parameter"]["parameterName"]
-                if element["elementName"] == "MinT":
+                elif element["elementName"] == "MinT":
                     element3 = element["time"]["parameter"]["parameterName"]
-                if element["elementName"] == "MaxT":
+                elif element["elementName"] == "MaxT":
                     element4 = element["time"]["parameter"]["parameterName"]
 
-            cursor.execute(
+            weather_data_list.append((element0, element1, element2, element3, element4))
+            
+        cursor.executemany(
                 """
                 INSERT INTO weather_table 
                 (location, wx, pop, min_t, max_t)
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                (element0, element1, element2, element3, element4),
+                weather_data_list,
             )    
 
         conn.commit()
